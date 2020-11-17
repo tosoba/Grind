@@ -4,7 +4,9 @@
 from typing import List
 
 
-# O(n^2)
+# O(n^2) - longest_subsequences list can be sorted by last element and then by sequence length (both asc) to achieve
+# olg(n) by replacing inner for loop with binary search that would yield an index in longest_subsequence to insert a
+# new (always new - otherwise sequences ending at previous elements would be lost) sequence ending at given element
 def longest_increasing_subsequence(arr: List[int]) -> List[int]:
     if not arr:
         return []
