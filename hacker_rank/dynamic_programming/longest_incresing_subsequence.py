@@ -11,7 +11,7 @@ def longest_increasing_subsequence(arr: List[int]) -> List[int]:
     if len(arr) == 1:
         return arr
 
-    longest_subsequences: List[List[int]] = [[arr[0]]]
+    longest_subsequences: List[List[int]] = []
     for element in arr:
         longest_sub_index = -1
         for j, subsequence in enumerate(longest_subsequences):
