@@ -12,17 +12,18 @@ def max_common_string_child_length(s1: str, s2: str) -> int:
     return max(max_common_string_child_length(s1, s2[1:]), max_common_string_child_length(s1[1:], s2))
 
 
+# with cache (memo) - O(n^2)
 class MemoMaxCommonStringChild:
-    __s1: str
-    __s2: str
+    __len1: int
+    __len2: int
     __memo: List[int]
     __calls = 0
 
     def __call__(self, s1: str, s2: str) -> int:
-        self.__s1 = s1
-        self.__s2 = s2
         if not s1 or not s2:
             return 0
+        self.__len1 = len(s1)
+        self.__len2 = len(s2)
         self.__memo = [-1 for _ in range(len(s1) * len(s2))]
         solved = self.__solve_2(s1, 0, s2, 0)
         print(self.__calls)
@@ -45,7 +46,7 @@ class MemoMaxCommonStringChild:
         self.__set_memo_at(i1, i2, length)
         return length
 
-    # this saves some calls
+    # this saves some calls but still stack overflows for long strings... (try to rewrite it in C++/Java)
     def __solve_2(self, s1: str, i1: int, s2: str, i2: int) -> int:
         self.__calls += 1
         if not s1 or not s2:
@@ -54,14 +55,14 @@ class MemoMaxCommonStringChild:
         if memoized != -1:
             return memoized
         if s1[0] == s2[0]:
-            memoized = self.__get_memo_at(i1 + 1, i2 + 1) if i1 + 1 < len(self.__s1) and i2 + 1 < len(self.__s2) else -1
+            memoized = self.__get_memo_at(i1 + 1, i2 + 1) if i1 + 1 < self.__len1 and i2 + 1 < self.__len2 else -1
             if memoized != -1:
                 return 1 + memoized
             length = 1 + self.__solve_2(s1[1:], i1 + 1, s2[1:], i2 + 1)
             self.__set_memo_at(i1, i2, length)
             return length
-        memo1 = self.__get_memo_at(i1 + 1, i2) if i1 + 1 < len(self.__s1) else -1
-        memo2 = self.__get_memo_at(i1, i2 + 1) if i2 + 1 < len(self.__s2) else -1
+        memo1 = self.__get_memo_at(i1 + 1, i2) if i1 + 1 < self.__len1 else -1
+        memo2 = self.__get_memo_at(i1, i2 + 1) if i2 + 1 < self.__len2 else -1
         length = max(memo1 if memo1 != -1 else self.__solve_2(s1[1:], i1 + 1, s2, i2),
                      memo2 if memo2 != -1 else self.__solve_2(s1, i1, s2[1:], i2 + 1))
         self.__set_memo_at(i1, i2, length)
@@ -70,14 +71,14 @@ class MemoMaxCommonStringChild:
     # index_of_memo in 1D representation of 2D array = len(self.__s1) * y + x
     def __get_memo_at(self, i1: int, i2: int) -> int:
         self.__assert_position(i1, i2)
-        return self.__memo[len(self.__s1) * i2 + i1]
+        return self.__memo[self.__len1 * i2 + i1]
 
     def __set_memo_at(self, i1: int, i2: int, value: int):
         self.__assert_position(i1, i2)
-        self.__memo[len(self.__s1) * i2 + i1] = value
+        self.__memo[self.__len1 * i2 + i1] = value
 
     def __assert_position(self, i1: int, i2: int):
-        assert i1 < len(self.__s1) and i2 < len(self.__s2)
+        assert i1 < self.__len1 and i2 < self.__len2
 
 
 if __name__ == '__main__':
