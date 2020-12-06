@@ -1,9 +1,7 @@
 # https://adventofcode.com/2020/day/6
 from typing import List, Set
 
-
-def stripped_input_lines_from(path: str) -> List[str]:
-    return list(map(lambda line: line.strip(), open(path, 'r').readlines()))
+from util.files import stripped_input_lines_from
 
 
 def count_yes_answers_1(path: str) -> int:

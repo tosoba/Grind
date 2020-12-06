@@ -2,9 +2,7 @@
 from typing import List, Dict
 import math
 
-
-def stripped_input_lines_from(path: str) -> List[str]:
-    return list(map(lambda line: line.strip(), open(path, 'r').readlines()))
+from util.files import stripped_input_lines_from
 
 
 def calculate_index(input_line: str, upper: int, lower: int, dec_upper_letter: str, inc_lower_letter: str) -> int:
