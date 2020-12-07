@@ -55,6 +55,17 @@ def number_of_containers_for(color: str, bags: Dict[str, Bag]) -> int:
     return len(containers)
 
 
+def count_content_bags_recursive(color: str, all_bags: Dict[str, Bag]) -> int:
+    total = 1
+    for bag_color, amount in all_bags[color].possible_contents.items():
+        total += amount * count_content_bags_recursive(bag_color, all_bags)
+    return total
+
+
+def count_content_bags(color: str, all_bags: Dict[str, Bag]) -> int:
+    return count_content_bags_recursive(color, all_bags) - 1
+
+
 if __name__ == '__main__':
     input_bags = read_bags_from('d7_bags_input.txt')
-    print(number_of_containers_for('shiny gold', input_bags))
+    print(count_content_bags('shiny gold', input_bags))
