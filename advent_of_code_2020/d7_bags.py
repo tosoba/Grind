@@ -36,7 +36,7 @@ def read_bags_from(path: str) -> Dict[str, Bag]:
     return bags
 
 
-def build_indirect_containers_for(color: str, all_bags: Dict[str, Bag], current_containers: Set[str]):
+def build_containers_for(color: str, all_bags: Dict[str, Bag], current_containers: Set[str]):
     next_colors_to_check = []
     for bag in all_bags.values():
         if bag.color == color:
@@ -46,15 +46,15 @@ def build_indirect_containers_for(color: str, all_bags: Dict[str, Bag], current_
             next_colors_to_check.append(bag.color)
 
     for color_to_check in next_colors_to_check:
-        build_indirect_containers_for(color_to_check, all_bags, current_containers)
+        build_containers_for(color_to_check, all_bags, current_containers)
 
 
-def number_of_indirect_containers_for(color: str, bags: Dict[str, Bag]) -> int:
+def number_of_containers_for(color: str, bags: Dict[str, Bag]) -> int:
     containers: Set[str] = set()
-    build_indirect_containers_for(color, bags, containers)
+    build_containers_for(color, bags, containers)
     return len(containers)
 
 
 if __name__ == '__main__':
     input_bags = read_bags_from('d7_bags_input.txt')
-    print(number_of_indirect_containers_for('shiny gold', input_bags))
+    print(number_of_containers_for('shiny gold', input_bags))
