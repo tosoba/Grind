@@ -1,3 +1,5 @@
+# https://adventofcode.com/2020/day/9
+import math
 from typing import List, Set
 
 
@@ -35,9 +37,42 @@ def find_first_number_not_equal_to_sum_of_prev(number_of_prev: int, numbers: Lis
     assert False
 
 
-def solve_part_1(number_of_prev: int, path: str) -> int:
+def solve_part_1_for(number_of_prev: int, path: str) -> int:
     return find_first_number_not_equal_to_sum_of_prev(number_of_prev, read_input_numbers_from(path))
 
 
+def solve_part_2_for(number_of_prev: int, path: str) -> int:
+    numbers = read_input_numbers_from(path)
+    first_number_not_equal_to_sum_of_prev = find_first_number_not_equal_to_sum_of_prev(number_of_prev, numbers)
+
+    left = 0
+    right = 1
+    current_sum = numbers[0] + numbers[1]
+    while current_sum != first_number_not_equal_to_sum_of_prev:
+        if current_sum < first_number_not_equal_to_sum_of_prev:
+            right += 1
+            if right >= len(numbers):
+                assert False
+            current_sum += numbers[right]
+        else:
+            current_sum -= numbers[left]
+            left += 1
+            if left == right:
+                right += 1
+                if right >= len(numbers):
+                    assert False
+                current_sum += numbers[right]
+
+    min_in_set = math.inf
+    max_in_set = 0
+    for number_index in range(left, right + 1):
+        number = numbers[number_index]
+        if number > max_in_set:
+            max_in_set = number
+        if number < min_in_set:
+            min_in_set = number
+    return min_in_set + max_in_set
+
+
 if __name__ == '__main__':
-    print(solve_part_1(25, 'd9_sum_of_prev_input.txt'))
+    print(solve_part_2_for(25, 'd9_sum_of_prev_input.txt'))
