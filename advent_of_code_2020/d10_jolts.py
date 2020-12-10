@@ -1,4 +1,5 @@
-from typing import List
+# https://adventofcode.com/2020/day/10
+from typing import List, Dict
 
 
 def read_input_numbers_from(path: str) -> List[int]:
@@ -14,7 +15,7 @@ def build_joltage_list(path: str) -> List[int]:
     return joltage_list
 
 
-def solve_part_1(path: str) -> int:
+def count_1_and_3_diffs(path: str) -> int:
     joltage_list = build_joltage_list(path)
     diff_1_count = 0
     diff_3_count = 0
@@ -27,13 +28,18 @@ def solve_part_1(path: str) -> int:
     return diff_1_count * diff_3_count
 
 
-def solve(joltage_list: List[int], start: int) -> int:
-    pass
-
-
-def solve_part_2(path: str) -> int:
-    return solve(build_joltage_list(path), 1)
+def count_unique_arrangements(path: str) -> int:
+    joltage_list = build_joltage_list(path)
+    arrangements_up_to_elements: Dict[int, int] = {0: 1}
+    for i in range(1, len(joltage_list)):
+        j = i - 1
+        arrangements_up_to_ith_element = 0
+        while j >= 0 and joltage_list[i] - joltage_list[j] <= 3:
+            arrangements_up_to_ith_element += arrangements_up_to_elements[joltage_list[j]]
+            j -= 1
+        arrangements_up_to_elements[joltage_list[i]] = arrangements_up_to_ith_element
+    return arrangements_up_to_elements[joltage_list[-1]]
 
 
 if __name__ == '__main__':
-    print(solve_part_1('d10_jolts_input.txt'))
+    print(count_unique_arrangements('d10_jolts_input.txt'))
