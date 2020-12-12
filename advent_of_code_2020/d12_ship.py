@@ -46,7 +46,7 @@ def turn_by_degrees(degrees: int, direction: str, current_heading: str) -> str:
         assert False
 
 
-def count_manhattan_of_movements_from(path: str) -> int:
+def count_manhattan_of_movements_1(path: str) -> int:
     movements = read_movements_from(path)
     heading = 'E'
     offset_ew = 0
@@ -79,5 +79,65 @@ def count_manhattan_of_movements_from(path: str) -> int:
     return abs(offset_ns) + abs(offset_ew)
 
 
+def modify_waypoint(waypoint_ew: int, waypoint_ns: int, degrees: int, direction: str) -> (int, int):
+    if degrees == 270:
+        degrees = 90
+        if direction == 'L':
+            direction = 'R'
+        elif direction == 'R':
+            direction = 'L'
+    if degrees == 180:
+        return -waypoint_ew, -waypoint_ns
+    elif degrees == 90:
+        waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
+        if direction == 'L':
+            if waypoint_ew >= 0 and waypoint_ns >= 0:
+                return -waypoint_ew, waypoint_ns
+            if waypoint_ew >= 0 and waypoint_ns <= 0:
+                return waypoint_ew, -waypoint_ns
+            if waypoint_ew <= 0 and waypoint_ns >= 0:
+                return waypoint_ew, -waypoint_ns
+            if waypoint_ew <= 0 and waypoint_ns <= 0:
+                return -waypoint_ew, waypoint_ns
+            assert False
+        elif direction == 'R':
+            if waypoint_ew >= 0 and waypoint_ns >= 0:
+                return waypoint_ew, -waypoint_ns
+            if waypoint_ew >= 0 and waypoint_ns <= 0:
+                return -waypoint_ew, waypoint_ns
+            if waypoint_ew <= 0 and waypoint_ns >= 0:
+                return -waypoint_ew, waypoint_ns
+            if waypoint_ew <= 0 and waypoint_ns <= 0:
+                return waypoint_ew, -waypoint_ns
+            assert False
+        assert False
+
+
+def count_manhattan_of_movements_2(path: str) -> int:
+    movements = read_movements_from(path)
+    waypoint_ew = 10
+    waypoint_ns = 1
+    offset_ew = 0
+    offset_ns = 0
+    for movement in movements:
+        code, value = movement
+        if code == 'N':
+            waypoint_ns += value
+        elif code == 'S':
+            waypoint_ns -= value
+        elif code == 'E':
+            waypoint_ew += value
+        elif code == 'W':
+            waypoint_ew -= value
+        elif code == 'L' or code == 'R':
+            waypoint_ew, waypoint_ns = modify_waypoint(waypoint_ew, waypoint_ns, value, code)
+        elif code == 'F':
+            offset_ew += value * waypoint_ew
+            offset_ns += value * waypoint_ns
+        else:
+            assert False
+    return abs(offset_ns) + abs(offset_ew)
+
+
 if __name__ == '__main__':
-    print(count_manhattan_of_movements_from('d12_ship_input.txt'))
+    print(count_manhattan_of_movements_2('d12_ship_input.txt'))
