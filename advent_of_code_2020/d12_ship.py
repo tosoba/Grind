@@ -80,34 +80,61 @@ def count_manhattan_of_movements_1(path: str) -> int:
 
 
 def modify_waypoint(waypoint_ew: int, waypoint_ns: int, degrees: int, direction: str) -> (int, int):
+    if waypoint_ns == 0 and waypoint_ew == 0:
+        return waypoint_ew, waypoint_ns
+
     if degrees == 270:
         degrees = 90
         if direction == 'L':
             direction = 'R'
         elif direction == 'R':
             direction = 'L'
+        else:
+            assert False
+
     if degrees == 180:
         return -waypoint_ew, -waypoint_ns
     elif degrees == 90:
-        waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
         if direction == 'L':
-            if waypoint_ew >= 0 and waypoint_ns >= 0:
+            if waypoint_ns == 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
+                return waypoint_ew, waypoint_ns
+            if waypoint_ew == 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return -waypoint_ew, waypoint_ns
-            if waypoint_ew >= 0 and waypoint_ns <= 0:
+
+            if waypoint_ew > 0 and waypoint_ns > 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
+                return -waypoint_ew, waypoint_ns
+            if waypoint_ew > 0 and waypoint_ns < 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return waypoint_ew, -waypoint_ns
-            if waypoint_ew <= 0 and waypoint_ns >= 0:
+            if waypoint_ew < 0 and waypoint_ns > 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return waypoint_ew, -waypoint_ns
-            if waypoint_ew <= 0 and waypoint_ns <= 0:
+            if waypoint_ew < 0 and waypoint_ns < 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return -waypoint_ew, waypoint_ns
             assert False
         elif direction == 'R':
-            if waypoint_ew >= 0 and waypoint_ns >= 0:
+            if waypoint_ns == 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return waypoint_ew, -waypoint_ns
-            if waypoint_ew >= 0 and waypoint_ns <= 0:
+            if waypoint_ew == 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
+                return waypoint_ew, waypoint_ns
+
+            if waypoint_ew > 0 and waypoint_ns > 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
+                return waypoint_ew, -waypoint_ns
+            if waypoint_ew > 0 and waypoint_ns < 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return -waypoint_ew, waypoint_ns
-            if waypoint_ew <= 0 and waypoint_ns >= 0:
+            if waypoint_ew < 0 and waypoint_ns > 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return -waypoint_ew, waypoint_ns
-            if waypoint_ew <= 0 and waypoint_ns <= 0:
+            if waypoint_ew < 0 and waypoint_ns < 0:
+                waypoint_ew, waypoint_ns = waypoint_ns, waypoint_ew
                 return waypoint_ew, -waypoint_ns
             assert False
         assert False
