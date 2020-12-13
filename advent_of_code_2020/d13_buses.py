@@ -17,25 +17,34 @@ def earliest_bus(timestamp: int, buses_input: str) -> int:
 
 
 def find_timestamp_for_departures_sync_with_positions(buses_input: str) -> int:
+    max_bus = 0
+    max_bus_index = 0
+    for index, bus in enumerate(buses_input.split(',')):
+        if not bus.isdigit():
+            continue
+        if int(bus) > max_bus:
+            max_bus = int(bus)
+            max_bus_index = index
+
     buses: Dict[int, int] = OrderedDict()
-    previous_bus_index = 0
-    for index, b in enumerate(buses_input.split(',')):
-        if b.isdigit():
-            buses[int(b)] = index - previous_bus_index
-            previous_bus_index = index
+    first_bus_offset = -1
+    for index, bus in enumerate(buses_input.split(',')):
+        if first_bus_offset == -1:
+            first_bus_offset = index - max_bus_index
+        if bus.isdigit() and int(bus) != max_bus:
+            buses[int(bus)] = index - max_bus_index
 
     timestamp = 0
     found = False
     while not found:
-        timestamp += 1
-        current_timestamp = timestamp
+        timestamp += max_bus
         found = True
-        for bus, position in buses.items():
-            current_timestamp += position
+        for bus, max_bus_index_offset in buses.items():
+            current_timestamp = timestamp + max_bus_index_offset
             if current_timestamp % bus != 0:
                 found = False
                 break
-    return timestamp
+    return timestamp + first_bus_offset
 
 
 if __name__ == '__main__':
