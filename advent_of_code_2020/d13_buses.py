@@ -16,7 +16,7 @@ def earliest_bus(timestamp: int, buses_input: str) -> int:
         offset += 1
 
 
-def find_timestamp_for_departures_sync_with_positions(buses_input: str) -> int:
+def find_timestamp_for_departures_sync_with_positions(buses_input: str, start_offset: int = 0) -> int:
     max_bus = 0
     max_bus_index = 0
     for index, bus in enumerate(buses_input.split(',')):
@@ -35,6 +35,12 @@ def find_timestamp_for_departures_sync_with_positions(buses_input: str) -> int:
             buses[int(bus)] = index - max_bus_index
 
     timestamp = 0
+    if start_offset != 0:
+        assert start_offset > 0
+        while start_offset % max_bus != 0:
+            start_offset += 1
+        timestamp = start_offset
+
     found = False
     while not found:
         timestamp += max_bus
@@ -50,4 +56,5 @@ def find_timestamp_for_departures_sync_with_positions(buses_input: str) -> int:
 if __name__ == '__main__':
     print(find_timestamp_for_departures_sync_with_positions(
         '19,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,643,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,17,13,x,x,x,x,23,x,x,x,x,x,x,x,'
-        '509,x,x,x,x,x,37,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29'))
+        '509,x,x,x,x,x,37,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29',
+        start_offset=100000000000000))
