@@ -1,4 +1,4 @@
-from typing import List, Set, Iterable
+from typing import List, Set, Iterable, Dict
 
 from util.files import stripped_input_lines_from
 
@@ -23,6 +23,16 @@ class Constraint:
 
     def filter_in_any_range(self, values: Iterable[int]) -> Iterable[int]:
         return filter(lambda value: self.is_in_any_range(value), values)
+
+    def all_in_any_range(self, values: Iterable[int]) -> bool:
+        for value in values:
+            if not self.is_in_any_range(value):
+                return False
+        return True
+
+    @property
+    def field(self) -> str:
+        return self._field
 
 
 def read_constraints_from(path: str) -> List[Constraint]:
@@ -56,5 +66,56 @@ def validate_tickets_from(path: str, constraints: List[Constraint]) -> int:
     return error_rate
 
 
+def read_valid_tickets_from(path: str, constraints: List[Constraint]) -> List[List[int]]:
+    valid_tickets: List[List[int]] = []
+    for line in stripped_input_lines_from(path):
+        values = {int(value) for value in line.split(',')}
+        for constraint in constraints:
+            values.difference_update(set(constraint.filter_in_any_range(values)))
+            if len(values) == 0:
+                valid_tickets.append([int(value) for value in line.split(',')])
+                break
+    return valid_tickets
+
+
+def match_ticket_fields(valid_tickets: List[List[int]], constraints: List[Constraint]) -> Dict[str, int]:
+    assert valid_tickets and constraints
+    indices_matching_fields: Dict[str, Set[int]] = {constraint.field: set() for constraint in constraints}
+    for index in range(0, len(valid_tickets[0])):
+        values = [ticket[index] for ticket in valid_tickets]
+        for constraint in constraints:
+            if constraint.all_in_any_range(values):
+                indices_matching_fields[constraint.field].add(index)
+    print(indices_matching_fields)
+
+    field_indices: Dict[str, int] = {constraint.field: -1 for constraint in constraints}
+    for _ in range(0, len(constraints)):
+        index_to_remove = -1
+        for field, indices in indices_matching_fields.items():
+            if len(indices) == 1:
+                index_to_remove = indices.pop()
+                field_indices[field] = index_to_remove
+                break
+        assert index_to_remove != -1
+        for indices in indices_matching_fields.values():
+            if index_to_remove in indices:
+                indices.remove(index_to_remove)
+    assert -1 not in field_indices.values()
+    print(field_indices)
+    return field_indices
+
+
+def multiply_departure_field_values(ticket: List[int], field_indices: Dict[str, int]) -> int:
+    result = 1
+    for field, index in field_indices.items():
+        if "departure" in field:
+            result *= ticket[index]
+    return result
+
+
 if __name__ == '__main__':
-    print(validate_tickets_from('d16_tickets.txt', read_constraints_from('d16_constraints.txt')))
+    cons = read_constraints_from('d16_constraints.txt')
+    tickets = read_valid_tickets_from('d16_tickets.txt', cons)
+    print(multiply_departure_field_values(
+        ticket=[181, 131, 61, 67, 151, 59, 113, 101, 79, 53, 71, 193, 179, 103, 149, 157, 127, 97, 73, 191],
+        field_indices=match_ticket_fields(tickets, cons)))
