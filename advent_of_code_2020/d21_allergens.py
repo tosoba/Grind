@@ -52,5 +52,42 @@ def count_ingredients_with_no_allergens_from(path: str) -> int:
     return result
 
 
+def ingredients_with_allergens_list_from(path: str) -> str:
+    foods: List[Food] = [Food(line) for line in stripped_input_lines_from(path)]
+    all_allergens: Set[str] = set()
+    all_ingredients: Set[str] = set()
+    for food in foods:
+        all_allergens.update(food.allergens)
+        all_ingredients.update(food.ingredients)
+
+    ingredients_with_allergens_map: Dict[str, Set[str]] = {allergen: set() for allergen in all_allergens}
+    for food in foods:
+        for allergen in food.allergens:
+            if ingredients_with_allergens_map[allergen] == set():
+                ingredients_with_allergens_map[allergen].update(food.ingredients)
+            else:
+                ingredients_with_allergens_map[allergen].intersection_update(food.ingredients)
+
+    determined_ingredients: Set[str] = set()
+    while any(len(ingredients) != 1 for ingredients in ingredients_with_allergens_map.values()):
+        for allergen, ingredients in ingredients_with_allergens_map.items():
+            if len(ingredients) == 1:
+                ingredient_to_remove = next(iter(ingredients))
+                if ingredient_to_remove in determined_ingredients:
+                    continue
+                for other_allergen, other_ingredients in ingredients_with_allergens_map.items():
+                    if other_allergen != allergen and ingredient_to_remove in other_ingredients:
+                        other_ingredients.remove(ingredient_to_remove)
+                determined_ingredients.add(ingredient_to_remove)
+                break
+
+    canonical_ingredients = []
+    for _, ingredients in sorted(ingredients_with_allergens_map.items(), key=lambda entry: entry[0]):
+        assert len(ingredients) == 1
+        canonical_ingredients.append(next(iter(ingredients)))
+
+    return ','.join(canonical_ingredients)
+
+
 if __name__ == '__main__':
-    print(count_ingredients_with_no_allergens_from('d21_allergens_input.txt'))
+    print(ingredients_with_allergens_list_from('d21_allergens_input.txt'))
