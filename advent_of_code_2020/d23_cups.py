@@ -1,6 +1,33 @@
 from typing import List
 
 
+class Cup:
+    def __init__(self, value: int) -> None:
+        self._value = value
+        self._next_cup = None
+
+    @property
+    def value(self) -> int:
+        return self._value
+
+    @next.setter
+    def next(self, next_cup):
+        self._next_cup = next_cup
+
+    @property
+    def next(self, next_cup):
+        return self._next_cup
+
+
+class CupsList:
+    def __init__(self, head: Cup) -> None:
+        self._head = head
+
+    @property
+    def head(self) -> Cup:
+        return self._head
+
+
 def simulate_game(initial_order: str, number_of_moves: int, number_of_cups: int = -1) -> str:
     assert initial_order.isdigit()
     initial_len = len(initial_order)
