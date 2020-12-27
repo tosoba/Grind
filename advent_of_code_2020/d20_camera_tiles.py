@@ -78,8 +78,18 @@ class Tile:
     def neighbour_numbers(self) -> Set[int]:
         return {number for number, _ in self.matching_tiles.values()}
 
-    def __str__(self) -> str:
-        return str(self.number)
+    @property
+    def content_orientations(self) -> List[List[str]]:
+        rotated = []
+        for index in range(0, len(self.content)):
+            rotated.append(''.join([row[index] for row in self.content]))
+        reversed_content = [row[::-1] for row in self.content]
+        reversed_rotated = []
+        for index in range(0, len(reversed_content)):
+            reversed_rotated.append(''.join([row[index] for row in reversed_content]))
+        orientations = [self.content, self.content[::-1], rotated, rotated[::-1],
+                        reversed_content, reversed_content[::-1], reversed_rotated, reversed_rotated[::-1]]
+        return orientations
 
 
 def read_tiles_from(path: str) -> List[Tile]:
@@ -165,6 +175,11 @@ def join_tiles_from(path: str):
     for row in tiles_grid:
         for tile in row:
             print(tile.number, end=',')
+        print()
+
+    for orientation in tiles[corners[0]].content_orientations:
+        for row in orientation:
+            print(row)
         print()
 
 
