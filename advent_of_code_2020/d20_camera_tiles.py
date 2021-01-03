@@ -87,6 +87,19 @@ class Tile:
     def neighbour_numbers(self) -> Set[int]:
         return {number for number, _ in self.matching_tiles.values()}
 
+    def rotate_180(self, reverse: bool = False):
+        self._content = self._content[::-1]
+        if reverse:
+            self._content = [row[::-1] for row in self._content]
+
+    def rotate_right(self, reverse: bool = False):
+        line_range = range(0, len(self._content)) if reverse else range(len(self._content) - 1, -1, -1)
+        self._content = [''.join([line[line_index] for line in self._content]) for line_index in line_range]
+
+    def rotate_left(self, reverse: bool = False):
+        line_range = range(len(self._content) - 1, -1, -1) if reverse else range(0, len(self._content))
+        self._content = [''.join([line[line_index] for line in self._content]) for line_index in line_range]
+
 
 def read_tiles_from(path: str) -> List[Tile]:
     lines = stripped_input_lines_from(path)
@@ -177,7 +190,7 @@ def join_tiles_from(path: str):
     first_neighbour = tiles_grid[0][1]
     top_left_tile_edge_index, _ = top_left.matching_edge_to_tile(first_neighbour)
     edge_to_match = top_left.edges[top_left_tile_edge_index]
-    first_neighbour.matching_edge_to(edge_to_match)
+    first_neighbour_edge_index, reverse = first_neighbour.matching_edge_to(edge_to_match)
 
     for row_index, row in enumerate(tiles_grid):
         for tile_index, tile in enumerate(row):
