@@ -9,7 +9,6 @@ class Tile:
     def __init__(self, number: int, edges: List[str], content: List[str]) -> None:
         self._number = number
         assert len(edges) == 4
-        self._edges = edges
         self._matching_tiles: Dict[str, Tuple[int, bool]] = {edge: (-1, False) for edge in edges}
         assert len(content) == 10
         self._content = content
@@ -20,23 +19,23 @@ class Tile:
 
     @property
     def edges(self) -> List[str]:
-        return self._edges
+        return [self.top, self.bottom, self.left, self.right]
 
     @property
     def top(self) -> str:
-        return self.edges[0]
+        return self.content[0]
 
     @property
     def bottom(self) -> str:
-        return self.edges[1]
+        return self.content[-1]
 
     @property
     def left(self) -> str:
-        return self.edges[2]
+        return ''.join([li[0] for li in self.content])
 
     @property
     def right(self) -> str:
-        return self.edges[3]
+        return ''.join([li[-1] for li in self.content])
 
     @property
     def matching_tiles(self) -> Dict[str, Tuple[int, bool]]:
@@ -51,11 +50,26 @@ class Tile:
 
     def check_matches_to(self, tile: 'Tile'):
         for edge in self.edges:
-            reversed_edge = edge[::-1]
             if edge in tile.edges:
                 self._matching_tiles[edge] = tile.number, False
-            elif reversed_edge in tile.edges:
+            elif edge[::-1] in tile.edges:
                 self._matching_tiles[edge] = tile.number, True
+
+    def matching_edge_to(self, other_edge: str) -> Tuple[int, bool]:
+        for index, edge in enumerate(self.edges):
+            if edge == other_edge:
+                return index, False
+            elif edge[::-1] == other_edge:
+                return index, True
+        assert False
+
+    def matching_edge_to_tile(self, tile: 'Tile') -> Tuple[int, bool]:
+        for edge, value in self.matching_tiles.items():
+            tile_number, reverse = value
+            if tile.number == tile_number:
+                edge_index, _ = self.matching_edge_to(edge)
+                return edge_index, reverse
+        assert False
 
     @property
     def is_corner(self) -> bool:
@@ -69,27 +83,9 @@ class Tile:
                 matched_edges += 1
         return matched_edges
 
-    def print_content(self):
-        for row in self.content:
-            print(row)
-        print()
-
     @property
     def neighbour_numbers(self) -> Set[int]:
         return {number for number, _ in self.matching_tiles.values()}
-
-    @property
-    def content_orientations(self) -> List[List[str]]:
-        rotated = []
-        for index in range(0, len(self.content)):
-            rotated.append(''.join([row[index] for row in self.content]))
-        reversed_content = [row[::-1] for row in self.content]
-        reversed_rotated = []
-        for index in range(0, len(reversed_content)):
-            reversed_rotated.append(''.join([row[index] for row in reversed_content]))
-        orientations = [self.content, self.content[::-1], rotated, rotated[::-1],
-                        reversed_content, reversed_content[::-1], reversed_rotated, reversed_rotated[::-1]]
-        return orientations
 
 
 def read_tiles_from(path: str) -> List[Tile]:
@@ -177,10 +173,25 @@ def join_tiles_from(path: str):
             print(tile.number, end=',')
         print()
 
-    for orientation in tiles[corners[0]].content_orientations:
-        for row in orientation:
-            print(row)
-        print()
+    top_left = tiles_grid[0][0]
+    first_neighbour = tiles_grid[0][1]
+    top_left_tile_edge_index, _ = top_left.matching_edge_to_tile(first_neighbour)
+    edge_to_match = top_left.edges[top_left_tile_edge_index]
+    first_neighbour.matching_edge_to(edge_to_match)
+
+    for row_index, row in enumerate(tiles_grid):
+        for tile_index, tile in enumerate(row):
+            if tile_index == 0:
+                if row_index == 0:
+                    continue
+                else:
+                    tile_to_match = tiles_grid[row_index - 1][0]
+                    edge_to_match = tile_to_match.bottom
+                    tile.matching_edge_to(edge_to_match)
+            else:
+                tile_to_match = tiles_grid[row_index][tile_index - 1]
+                edge_to_match = tile_to_match.right
+                tile.matching_edge_to(edge_to_match)
 
 
 if __name__ == '__main__':
