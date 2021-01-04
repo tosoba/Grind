@@ -19,7 +19,7 @@ class Tile:
 
     @property
     def edges(self) -> List[str]:
-        return [self.top, self.bottom, self.left, self.right]
+        return [self.top, self.right, self.bottom, self.left]
 
     @property
     def top(self) -> str:
@@ -90,15 +90,36 @@ class Tile:
     def rotate_180(self, reverse: bool = False):
         self._content = self._content[::-1]
         if reverse:
-            self._content = [row[::-1] for row in self._content]
+            self.reverse()
 
     def rotate_right(self, reverse: bool = False):
-        line_range = range(0, len(self._content)) if reverse else range(len(self._content) - 1, -1, -1)
-        self._content = [''.join([line[line_index] for line in self._content]) for line_index in line_range]
+        self._content = [''.join([line[line_index] for line in self._content])
+                         for line_index in range(0, len(self._content))]
+        if reverse:
+            self.reverse()
 
     def rotate_left(self, reverse: bool = False):
-        line_range = range(len(self._content) - 1, -1, -1) if reverse else range(0, len(self._content))
-        self._content = [''.join([line[line_index] for line in self._content]) for line_index in line_range]
+        self._content = [''.join([line[line_index] for line in self._content])
+                         for line_index in range(len(self._content) - 1, -1, -1)]
+        if reverse:
+            self.reverse()
+
+    def reverse(self):
+        self._content = [row[::-1] for row in self._content]
+
+    def rotate(self, from_edge_index: int, to_edge_index: int, reverse: bool = False):
+        diff = to_edge_index - from_edge_index
+        if diff == 0:
+            if reverse:
+                self.reverse()
+        elif abs(diff) == 2:
+            self.rotate_180(reverse)
+        elif diff == -1 or diff == 3:
+            self.rotate_left(reverse)
+        elif diff == 1 or diff == -3:
+            self.rotate_right(reverse)
+        else:
+            assert False
 
 
 def read_tiles_from(path: str) -> List[Tile]:
@@ -191,6 +212,8 @@ def join_tiles_from(path: str):
     top_left_tile_edge_index, _ = top_left.matching_edge_to_tile(first_neighbour)
     edge_to_match = top_left.edges[top_left_tile_edge_index]
     first_neighbour_edge_index, reverse = first_neighbour.matching_edge_to(edge_to_match)
+    top_left.rotate(top_left_tile_edge_index, 1)
+    first_neighbour.rotate(first_neighbour_edge_index, 3, reverse)
 
     for row_index, row in enumerate(tiles_grid):
         for tile_index, tile in enumerate(row):
@@ -200,11 +223,13 @@ def join_tiles_from(path: str):
                 else:
                     tile_to_match = tiles_grid[row_index - 1][0]
                     edge_to_match = tile_to_match.bottom
-                    tile.matching_edge_to(edge_to_match)
+                    edge_index, reverse = tile.matching_edge_to(edge_to_match)
+                    tile.rotate(edge_index, 3, reverse)
             else:
                 tile_to_match = tiles_grid[row_index][tile_index - 1]
                 edge_to_match = tile_to_match.right
-                tile.matching_edge_to(edge_to_match)
+                edge_index, reverse = tile.matching_edge_to(edge_to_match)
+                tile.rotate(edge_index, 0, reverse)
 
 
 if __name__ == '__main__':
