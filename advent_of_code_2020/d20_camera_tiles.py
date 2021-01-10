@@ -107,6 +107,7 @@ class Tile:
     def reverse(self):
         self._content = [row[::-1] for row in self._content]
 
+    # rotate it in the way so the edge always stays in tact !!!
     def rotate(self, from_edge_index: int, to_edge_index: int, reverse: bool = False):
         diff = to_edge_index - from_edge_index
         if diff == 0:
