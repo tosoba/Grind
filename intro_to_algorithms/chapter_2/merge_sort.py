@@ -39,13 +39,13 @@ def merge_sort_in_place_between(arr: List[int], start: int, end: int):
     mid = int((end + start) / 2)
     merge_sort_in_place_between(arr, 0, mid)
     merge_sort_in_place_between(arr, mid, end)
-    return merge_in_place(arr, start, mid, end)
+    merge_in_place(arr, start, mid, end)
 
 
 def merge_sort_in_place(arr: List[int]):
     if not arr or len(arr) == 1:
         return
-    return merge_sort_in_place_between(arr, 0, len(arr))
+    merge_sort_in_place_between(arr, 0, len(arr))
 
 
 if __name__ == '__main__':
