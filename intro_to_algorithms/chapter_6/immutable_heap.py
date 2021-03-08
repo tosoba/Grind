@@ -6,7 +6,7 @@ class ImmutableHeap:
         self._elements = elements
         self._is_max = is_max
 
-    def _heapify(self, index: int):
+    def _heapify_recursive(self, index: int):
         assert index < len(self._elements)
         index_of_left = ImmutableHeap._index_of_left(index)
         index_of_right = ImmutableHeap._index_of_right(index)
@@ -15,8 +15,8 @@ class ImmutableHeap:
         def should_swap_sub_root_min(child_index: int) -> bool:
             return self._elements[child_index] < self._elements[index_of_sub_root]
 
-        def should_swap_sub_root_max(sub_root_index: int, child_index: int) -> bool:
-            return self._elements[child_index] > self._elements[sub_root_index]
+        def should_swap_sub_root_max(child_index: int) -> bool:
+            return self._elements[child_index] > self._elements[index_of_sub_root]
 
         should_swap_sub_root = should_swap_sub_root_max if self._is_max else should_swap_sub_root_min
 
@@ -28,11 +28,40 @@ class ImmutableHeap:
         if index_of_sub_root != index:
             self._elements[index], self._elements[index_of_sub_root] \
                 = self._elements[index_of_sub_root], self._elements[index]
-            self._heapify(index_of_sub_root)
+            self._heapify_recursive(index_of_sub_root)
+
+    def _heapify_iterative(self, index: int):
+        assert index < len(self._elements)
+        index_of_left = ImmutableHeap._index_of_left(index)
+        index_of_right = ImmutableHeap._index_of_right(index)
+        index_of_sub_root = index
+
+        def should_swap_sub_root_min(sub_root_index: int, child_index: int) -> bool:
+            return self._elements[child_index] < self._elements[sub_root_index]
+
+        def should_swap_sub_root_max(sub_root_index: int, child_index: int) -> bool:
+            return self._elements[child_index] > self._elements[sub_root_index]
+
+        should_swap_sub_root = should_swap_sub_root_max if self._is_max else should_swap_sub_root_min
+
+        while True:
+            initial_index_of_sub_root = index_of_sub_root
+            if index_of_left < len(self._elements) and should_swap_sub_root(index_of_sub_root, index_of_left):
+                index_of_sub_root = index_of_left
+            if index_of_right < len(self._elements) and should_swap_sub_root(index_of_sub_root, index_of_right):
+                index_of_sub_root = index_of_right
+
+            if initial_index_of_sub_root != index_of_sub_root:
+                self._elements[initial_index_of_sub_root], self._elements[index_of_sub_root] \
+                    = self._elements[index_of_sub_root], self._elements[initial_index_of_sub_root]
+                index_of_left = ImmutableHeap._index_of_left(index_of_sub_root)
+                index_of_right = ImmutableHeap._index_of_right(index_of_sub_root)
+            else:
+                break
 
     def build(self) -> 'ImmutableHeap':
         for i in range(len(self._elements) // 2, -1, -1):
-            self._heapify(i)
+            self._heapify_iterative(i)
         return self
 
     @property
@@ -55,7 +84,7 @@ class ImmutableHeap:
         new_elements.insert(0, new_elements[-1])
         new_elements.pop(-1)
         heap = ImmutableHeap(new_elements, self._is_max)
-        heap._heapify(0)
+        heap._heapify_iterative(0)
         return heap
 
     @staticmethod
