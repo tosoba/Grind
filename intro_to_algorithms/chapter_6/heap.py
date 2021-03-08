@@ -41,8 +41,11 @@ class MaxHeap:
 
     @property
     def _copy_without_root(self) -> 'MaxHeap':
-        heap = MaxHeap(self._elements[1:])
-        heap.build()
+        new_elements = self._elements[1:]
+        new_elements.insert(0, new_elements[-1])
+        new_elements.pop(-1)
+        heap = MaxHeap(new_elements)
+        heap._heapify(0)
         return heap
 
     @staticmethod
@@ -60,5 +63,5 @@ class MaxHeap:
 
 if __name__ == '__main__':
     test_arr = [100, 113, 110, 85, 105, 102, 86, 63, 81, 101, 94, 106, 101, 79, 94, 90, 97]
-    print(MaxHeap(test_arr).build().non_mutating_sorted_elements_asc)
+    print(MaxHeap(test_arr).build().non_mutating_sorted_elements_desc)
     pass
