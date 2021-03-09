@@ -99,8 +99,21 @@ class ImmutableHeap:
     def _index_of_right(i: int) -> int:
         return 2 * i + 2
 
+    def delete_at(self, index: int) -> int:
+        assert index < len(self._elements)
+        self._elements[index], self._elements[-1] = \
+            self._elements[-1], self._elements[index]
+        self._heapify_iterative(index)
+        return self._elements.pop(-1)
+
 
 if __name__ == '__main__':
     test_arr = [100, 113, 110, 85, 105, 102, 86, 63, 81, 101, 94, 106, 101, 79, 94, 90, 97]
-    print(ImmutableHeap(test_arr, is_max=False).build().non_mutating_sorted_elements_top_to_bottom)
+    print(ImmutableHeap(test_arr, is_max=False)
+          .build()
+          .non_mutating_sorted_elements_top_to_bottom)
+
+    h = ImmutableHeap(test_arr, is_max=True).build()
+    print(h.delete_at(1))
+    print(h.non_mutating_sorted_elements_top_to_bottom)
     pass
