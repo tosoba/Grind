@@ -10,6 +10,29 @@ class YoungTableau:
         self.__elements_count = len(elements)
         for i in range(len(elements), rows * columns):
             self.__elements.append(None)
+        self.__build()
+
+    def print_2d(self):
+        for i in range(0, self.__rows):
+            for j in range(0, self.__columns):
+                index_1d = self.__1d_index_of(i, j)
+                print(self.__elements[index_1d], end='')
+                print(',', end='')
+            print()
+
+    def validate(self) -> bool:
+        for i in range(0, self.__elements_count):
+            index_of_right = self.__1d_index_of_right(*self.__2d_index_of(i))
+            if index_of_right is not None \
+                    and self.__elements[index_of_right] is not None \
+                    and self.__elements[i] > self.__elements[index_of_right]:
+                return False
+            index_of_bottom = self.__1d_index_of_bottom(*self.__2d_index_of(i))
+            if index_of_bottom is not None \
+                    and self.__elements[index_of_bottom] is not None \
+                    and self.__elements[i] > self.__elements[index_of_bottom]:
+                return False
+        return True
 
     @property
     def pop_min(self) -> int:
@@ -17,15 +40,58 @@ class YoungTableau:
         self.__elements_count -= 1
         return root
 
+    def __rearrange_from(self, index: int):
+        assert index < self.__elements_count
+        index_of_right = self.__1d_index_of_right(*self.__2d_index_of(index))
+        index_of_bottom = self.__1d_index_of_bottom(*self.__2d_index_of(index))
+        index_of_parent = index
+        if index_of_right is not None \
+                and self.__elements[index_of_right] is not None \
+                and self.__elements[index_of_right] < self.__elements[index]:
+            index_of_parent = index_of_right
+        if index_of_bottom is not None \
+                and self.__elements[index_of_bottom] is not None \
+                and self.__elements[index_of_bottom] < self.__elements[index]:
+            index_of_parent = index_of_bottom
+        if index_of_parent != index:
+            self.__elements[index], self.__elements[index_of_parent] \
+                = self.__elements[index_of_parent], self.__elements[index]
+            self.__rearrange_from(index_of_parent)
+
+    def __build(self):
+        for i in range(self.__elements_count - 1, -1, -1):
+            self.__rearrange_from(i)
+
+    def __2d_index_of(self, index: int) -> (int, int):
+        return index // self.__rows, index % self.__rows
+
     def __1d_index_of(self, row: int, column: int) -> int:
         return row * self.__columns + column
 
+    def __1d_index_of_parent_left(self, row: int, column: int) -> int:
+        assert 0 <= row < self.__rows and 0 <= column < self.__columns
+        column_of_left = column - 1
+        return self.__1d_index_of(row, column_of_left) if column_of_left >= 0 else None
+
+    def __1d_index_of_parent_top(self, row: int, column: int) -> int:
+        assert 0 <= row < self.__rows and 0 <= column < self.__columns
+        row_of_top = row - 1
+        return self.__1d_index_of(row_of_top, column) if row_of_top >= 0 else None
+
     def __1d_index_of_right(self, row: int, column: int) -> Optional[int]:
-        assert row < self.__rows and column < self.__columns
+        assert 0 <= row < self.__rows and 0 <= column < self.__columns
         column_of_right = column + 1
         return self.__1d_index_of(row, column_of_right) if column_of_right < self.__columns else None
 
     def __1d_index_of_bottom(self, row: int, column: int) -> Optional[int]:
-        assert row < self.__rows and column < self.__columns
+        assert 0 <= row < self.__rows and 0 <= column < self.__columns
         row_of_bottom = row + 1
         return self.__1d_index_of(row_of_bottom, column) if row_of_bottom < self.__rows else None
+
+
+if __name__ == '__main__':
+    test_arr = [100, 113, 110, 85, 105, 102, 86, 63, 81, 101, 94, 106, 101, 79, 94, 90, 97]
+    print(len(test_arr))
+    yt = YoungTableau(test_arr, 5, 5)
+    yt.print_2d()
+    print(yt.validate())
