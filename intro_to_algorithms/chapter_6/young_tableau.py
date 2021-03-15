@@ -66,6 +66,32 @@ class YoungTableau:
         self.__elements_count += 1
         self.__rearrange_from(self.__elements_count - 1)
 
+    def contains(self, value: int) -> bool:
+        return self.__contains(value, 0)
+
+    def __contains(self, value: int, root_index: int) -> bool:
+        index_of_right = self.__1d_index_of_right(*self.__2d_index_of(root_index))
+        index_of_bottom = self.__1d_index_of_bottom(*self.__2d_index_of(root_index))
+        right_contains = False
+        if index_of_right is not None and self.__elements[index_of_right] is not None:
+            right = self.__elements[index_of_right]
+            if right == value:
+                return True
+            elif right < value:
+                right_contains = self.__contains(value, index_of_right)
+
+        if not right_contains:
+            if index_of_bottom is not None and self.__elements[index_of_bottom] is not None:
+                bottom = self.__elements[index_of_bottom]
+                if bottom == value:
+                    return True
+                elif bottom < value:
+                    return self.__contains(value, index_of_bottom)
+            else:
+                return right_contains
+        else:
+            return right_contains
+
     def __rearrange_from(self, index: int, recurse: bool = True):
         assert index < self.__elements_count
         index_of_left = self.__1d_index_of_parent_left(*self.__2d_index_of(index))
@@ -125,3 +151,4 @@ if __name__ == '__main__':
     yt.insert(88)
     yt.print_2d()
     print(yt.validate())
+    print(yt.contains(109))
