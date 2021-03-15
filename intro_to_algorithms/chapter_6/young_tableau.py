@@ -36,6 +36,7 @@ class YoungTableau:
 
     @property
     def pop_min(self) -> int:
+        assert self.__elements_count > 0
         root = self.__elements[0]
         self.__elements[0] = self.__elements[self.__elements_count - 1]
         self.__elements[self.__elements_count - 1] = None
@@ -58,6 +59,12 @@ class YoungTableau:
             else:
                 break
         return root
+
+    def insert(self, value: int):
+        assert self.__elements_count < self.__columns * self.__rows
+        self.__elements[self.__elements_count] = value
+        self.__elements_count += 1
+        self.__rearrange_from(self.__elements_count - 1)
 
     def __rearrange_from(self, index: int, recurse: bool = True):
         assert index < self.__elements_count
@@ -115,6 +122,6 @@ if __name__ == '__main__':
     yt = YoungTableau(test_arr, 5, 5)
     yt.print_2d()
     print(yt.validate())
-    print(yt.pop_min)
+    yt.insert(88)
     yt.print_2d()
     print(yt.validate())
