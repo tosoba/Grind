@@ -37,10 +37,29 @@ class YoungTableau:
     @property
     def pop_min(self) -> int:
         root = self.__elements[0]
+        self.__elements[0] = self.__elements[self.__elements_count - 1]
+        self.__elements[self.__elements_count - 1] = None
         self.__elements_count -= 1
+
+        current_index = 0
+        while True:
+            index_of_right = self.__1d_index_of_right(*self.__2d_index_of(current_index))
+            index_of_bottom = self.__1d_index_of_bottom(*self.__2d_index_of(current_index))
+            if index_of_right is not None \
+                    and self.__elements[index_of_right] is not None \
+                    and self.__elements[index_of_right] < self.__elements[current_index]:
+                current_index = index_of_right
+            if index_of_bottom is not None \
+                    and self.__elements[index_of_bottom] is not None \
+                    and self.__elements[index_of_bottom] < self.__elements[current_index]:
+                current_index = index_of_bottom
+            if current_index == index_of_right or current_index == index_of_bottom:
+                self.__rearrange_from(current_index, recurse=False)
+            else:
+                break
         return root
 
-    def __rearrange_from(self, index: int):
+    def __rearrange_from(self, index: int, recurse: bool = True):
         assert index < self.__elements_count
         index_of_left = self.__1d_index_of_parent_left(*self.__2d_index_of(index))
         index_of_top = self.__1d_index_of_parent_top(*self.__2d_index_of(index))
@@ -56,7 +75,8 @@ class YoungTableau:
         if index_of_parent != index:
             self.__elements[index], self.__elements[index_of_parent] \
                 = self.__elements[index_of_parent], self.__elements[index]
-            self.__rearrange_from(index_of_parent)
+            if recurse:
+                self.__rearrange_from(index_of_parent)
 
     def __build(self):
         for i in range(0, self.__elements_count):
@@ -93,5 +113,8 @@ if __name__ == '__main__':
     test_arr = [100, 113, 110, 85, 105, 102, 86, 63, 81, 101, 94, 106, 101, 79, 94, 90, 97]
     print(len(test_arr))
     yt = YoungTableau(test_arr, 5, 5)
+    yt.print_2d()
+    print(yt.validate())
+    print(yt.pop_min)
     yt.print_2d()
     print(yt.validate())
