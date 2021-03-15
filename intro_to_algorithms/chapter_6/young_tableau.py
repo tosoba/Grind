@@ -42,24 +42,24 @@ class YoungTableau:
 
     def __rearrange_from(self, index: int):
         assert index < self.__elements_count
-        index_of_right = self.__1d_index_of_right(*self.__2d_index_of(index))
-        index_of_bottom = self.__1d_index_of_bottom(*self.__2d_index_of(index))
+        index_of_left = self.__1d_index_of_parent_left(*self.__2d_index_of(index))
+        index_of_top = self.__1d_index_of_parent_top(*self.__2d_index_of(index))
         index_of_parent = index
-        if index_of_right is not None \
-                and self.__elements[index_of_right] is not None \
-                and self.__elements[index_of_right] < self.__elements[index]:
-            index_of_parent = index_of_right
-        if index_of_bottom is not None \
-                and self.__elements[index_of_bottom] is not None \
-                and self.__elements[index_of_bottom] < self.__elements[index]:
-            index_of_parent = index_of_bottom
+        if index_of_left is not None \
+                and self.__elements[index_of_left] is not None \
+                and self.__elements[index_of_left] > self.__elements[index_of_parent]:
+            index_of_parent = index_of_left
+        if index_of_top is not None \
+                and self.__elements[index_of_top] is not None \
+                and self.__elements[index_of_top] > self.__elements[index_of_parent]:
+            index_of_parent = index_of_top
         if index_of_parent != index:
             self.__elements[index], self.__elements[index_of_parent] \
                 = self.__elements[index_of_parent], self.__elements[index]
             self.__rearrange_from(index_of_parent)
 
     def __build(self):
-        for i in range(self.__elements_count - 1, -1, -1):
+        for i in range(0, self.__elements_count):
             self.__rearrange_from(i)
 
     def __2d_index_of(self, index: int) -> (int, int):
