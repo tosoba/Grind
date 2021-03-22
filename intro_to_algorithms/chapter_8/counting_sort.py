@@ -28,7 +28,7 @@ def counting_sort(arr: List[int]) -> List[int]:
     # after while loop counts[value] = number of values <= value
 
     sorted_arr: List[int] = [0] * len(arr)
-    for i in range(0, len(arr)):
+    for i in range(len(arr) - 1, -1, -1):  # from 0 to len(arr) works as well but not stable
         destination_index = counts[arr[i]] - 1
         sorted_arr[destination_index] = arr[i]
         counts[arr[i]] -= 1
