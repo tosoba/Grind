@@ -101,7 +101,7 @@ class Node:
             current = current.__parent
         return current
 
-    def insert(self, value: int):
+    def insert_iterative(self, value: int):
         current = self.root
         current_parent = current.__parent
         while current is not None:
@@ -111,6 +111,23 @@ class Node:
             current_parent.left = Node(value)
         else:
             current_parent.right = Node(value)
+
+    def insert_recursive(self, value: int):
+        current = self.root
+        parent = current.__parent
+        Node.__insert_recursive(current, parent, value)
+
+    @staticmethod
+    def __insert_recursive(current: 'Node', parent: 'Node', value: int):
+        if current is None:
+            if parent.__value > value:
+                parent.left = Node(value)
+            else:
+                parent.right = Node(value)
+            return
+        Node.__insert_recursive(current=current.__left if value < current.value else current.__right,
+                                parent=current,
+                                value=value)
 
     def delete(self):
         parent = self.__parent
@@ -157,8 +174,8 @@ if __name__ == '__main__':
     root.left = Node(4)
     to_delete = Node(6)
     root.right = to_delete
-    root.insert(3)
-    root.insert(4)
-    root.insert(9)
+    root.insert_recursive(3)
+    root.insert_recursive(4)
+    root.insert_recursive(9)
     to_delete.delete()
     root.print_in_order()
