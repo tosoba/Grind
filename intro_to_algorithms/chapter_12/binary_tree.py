@@ -112,12 +112,53 @@ class Node:
         else:
             current_parent.right = Node(value)
 
+    def delete(self):
+        parent = self.__parent
+        children_count = 0
+        if self.__right is not None:
+            children_count += 1
+        if self.__left is not None:
+            children_count += 1
+
+        if children_count == 0:
+            if parent is None:
+                return
+            if self == parent.__left:
+                parent.__left = None
+            else:
+                parent.__right = None
+        elif children_count == 1:
+            if parent is None:
+                return
+            child = self.__left if self.__left is not None else self.__right
+            if self == parent.__left:
+                parent.left = child
+            else:
+                parent.right = child
+        else:
+            successor = self.successor
+            if successor == self.__right:
+                successor.left = self.__left
+            else:
+                if successor.__right is not None:
+                    self.__right.left = successor.__right
+                successor.right = self.__right
+                successor.left = self.__left
+            if parent is None:
+                return
+            if self == parent.__left:
+                parent.left = successor
+            else:
+                parent.right = successor
+
 
 if __name__ == '__main__':
     root = Node(5)
     root.left = Node(4)
-    root.right = Node(6)
+    to_delete = Node(6)
+    root.right = to_delete
     root.insert(3)
     root.insert(4)
     root.insert(9)
+    to_delete.delete()
     root.print_in_order()
