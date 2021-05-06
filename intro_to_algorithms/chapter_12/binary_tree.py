@@ -3,167 +3,169 @@ from typing import Optional
 
 class Node:
     def __init__(self, value: int) -> None:
-        self.__value: int = value
-        self.__left: Optional['Node'] = None
-        self.__right: Optional['Node'] = None
-        self.__parent: Optional['Node'] = None
+        self._value: int = value
+        self._left: Optional['Node'] = None
+        self._right: Optional['Node'] = None
+        self._parent: Optional['Node'] = None
 
     @property
     def left(self) -> 'Node':
-        return self.__left
+        return self._left
 
     @property
     def right(self) -> 'Node':
-        return self.__right
+        return self._right
 
     @property
     def parent(self) -> 'Node':
-        return self.__parent
+        return self._parent
 
     @property
     def value(self) -> int:
-        return self.__value
+        return self._value
 
     @left.setter
     def left(self, left: 'Node'):
-        self.__left = left
-        left.__parent = self
+        self._left = left
+        if left is not None:
+            left._parent = self
 
     @right.setter
     def right(self, right: 'Node'):
-        self.__right = right
-        right.__parent = self
+        self._right = right
+        if right is not None:
+            right._parent = self
 
     def __str__(self) -> str:
-        return 'Node: ' + str(self.__value)
+        return 'Node: ' + str(self._value)
 
     def print_in_order(self):
-        if self.__left is not None:
-            self.__left.print_in_order()
+        if self.left is not None:
+            self.left.print_in_order()
         print(self)
-        if self.__right is not None:
-            self.__right.print_in_order()
+        if self.right is not None:
+            self.right.print_in_order()
 
     def search_recursive(self, value: int) -> Optional['Node']:
-        if value == self.__value:
+        if value == self.value:
             return self
-        elif value > self.__value:
-            return None if self.__right is None else self.__right.search_recursive(value)
+        elif value > self.value:
+            return None if self.right is None else self.right.search_recursive(value)
         else:
-            return None if self.__left is None else self.__left.search_recursive(value)
+            return None if self.left is None else self.left.search_recursive(value)
 
     def search_iterative(self, value: int) -> Optional['Node']:
         current = self
-        while current is not None and current.__value != value:
-            current = current.__right if value > current.__value else current.__left
+        while current is not None and current.value != value:
+            current = current.right if value > current.value else current.left
         return current
 
     @property
     def min(self) -> 'Node':
         current = self
         while current is not None:
-            current = current.__left
+            current = current.left
         return current
 
     @property
     def max(self) -> 'Node':
         current = self
         while current is not None:
-            current = current.__right
+            current = current.right
         return current
 
     @property
     def successor(self) -> Optional['Node']:
-        if self.__right is not None:
-            return self.__right.min
+        if self.right is not None:
+            return self.right.min
         current = self
-        current_parent = current.__parent
-        while current_parent is not None and current_parent.__right == current:
+        current_parent = current.parent
+        while current_parent is not None and current_parent.right == current:
             current = current_parent
-            current_parent = current.__parent
+            current_parent = current.parent
         return current_parent
 
     @property
     def predecessor(self) -> Optional['Node']:
-        if self.__left is not None:
-            return self.__left.max
+        if self.left is not None:
+            return self.left.max
         current = self
-        current_parent = current.__parent
-        while current_parent is not None and current_parent.__left == current:
+        current_parent = current.parent
+        while current_parent is not None and current_parent.left == current:
             current = current_parent
-            current_parent = current.__parent
+            current_parent = current.parent
         return current_parent
 
     @property
     def root(self) -> 'Node':
         current = self
-        while current.__parent is not None:
-            current = current.__parent
+        while current.parent is not None:
+            current = current.parent
         return current
 
     def insert_iterative(self, value: int):
         current = self.root
-        current_parent = current.__parent
+        current_parent = current.parent
         while current is not None:
             current_parent = current
-            current = current.__left if value < current.value else current.__right
-        if current_parent.__value > value:
+            current = current.left if value < current.value else current.right
+        if current_parent.value > value:
             current_parent.left = Node(value)
         else:
             current_parent.right = Node(value)
 
     def insert_recursive(self, value: int):
         current = self.root
-        parent = current.__parent
+        parent = current.parent
         Node.__insert_recursive(current, parent, value)
 
     @staticmethod
     def __insert_recursive(current: 'Node', parent: 'Node', value: int):
         if current is None:
-            if parent.__value > value:
+            if parent.value > value:
                 parent.left = Node(value)
             else:
                 parent.right = Node(value)
             return
-        Node.__insert_recursive(current=current.__left if value < current.value else current.__right,
+        Node.__insert_recursive(current=current.left if value < current.value else current.right,
                                 parent=current,
                                 value=value)
 
     def delete(self):
-        parent = self.__parent
+        parent = self.parent
         children_count = 0
-        if self.__right is not None:
+        if self.right is not None:
             children_count += 1
-        if self.__left is not None:
+        if self.left is not None:
             children_count += 1
 
         if children_count == 0:
             if parent is None:
                 return
-            if self == parent.__left:
-                parent.__left = None
+            if self == parent.left:
+                parent.left = None
             else:
-                parent.__right = None
+                parent.right = None
         elif children_count == 1:
             if parent is None:
                 return
-            child = self.__left if self.__left is not None else self.__right
-            if self == parent.__left:
+            child = self.left if self.left is not None else self.right
+            if self == parent.left:
                 parent.left = child
             else:
                 parent.right = child
         else:
             successor = self.successor
-            if successor == self.__right:
-                successor.left = self.__left
+            if successor == self.right:
+                successor.left = self.left
             else:
-                if successor.__right is not None:
-                    self.__right.left = successor.__right
-                successor.right = self.__right
-                successor.left = self.__left
+                if successor.right is not None:
+                    self.right.left = successor.right
+                successor.right = self.right
+                successor.left = self.left
             if parent is None:
                 return
-            if self == parent.__left:
+            if self == parent.left:
                 parent.left = successor
             else:
                 parent.right = successor
