@@ -103,33 +103,33 @@ class Node:
             current = current.parent
         return current
 
-    def insert_iterative(self, value: int):
+    def insert_iterative(self, node: 'Node'):
         current = self.root
         current_parent = current.parent
         while current is not None:
             current_parent = current
-            current = current.left if value < current.value else current.right
-        if current_parent.value > value:
-            current_parent.left = Node(value)
+            current = current.left if node.value < current.value else current.right
+        if current_parent.value > node.value:
+            current_parent.left = node
         else:
-            current_parent.right = Node(value)
+            current_parent.right = node
 
-    def insert_recursive(self, value: int):
+    def insert_recursive(self, node: 'Node'):
         current = self.root
         parent = current.parent
-        Node.__insert_recursive(current, parent, value)
+        Node.__insert_recursive(current, parent, node)
 
     @staticmethod
-    def __insert_recursive(current: 'Node', parent: 'Node', value: int):
+    def __insert_recursive(current: 'Node', parent: 'Node', node: 'Node'):
         if current is None:
-            if parent.value > value:
-                parent.left = Node(value)
+            if parent.value > node.value:
+                parent.left = node
             else:
-                parent.right = Node(value)
+                parent.right = node
             return
-        Node.__insert_recursive(current=current.left if value < current.value else current.right,
+        Node.__insert_recursive(current=current.left if node.value < current.value else current.right,
                                 parent=current,
-                                value=value)
+                                node=node)
 
     def delete(self):
         parent = self.parent
@@ -170,14 +170,26 @@ class Node:
             else:
                 parent.right = successor
 
+    @property
+    def is_left_child(self) -> bool:
+        return self.parent is not None and self.parent.left == self
+
+    @property
+    def is_right_child(self) -> bool:
+        return self.parent is not None and self.parent.right == self
+
+    @property
+    def is_attached(self) -> bool:
+        return self.parent is not None or self.left is not None or self.right is not None
+
 
 if __name__ == '__main__':
     root = Node(5)
     root.left = Node(4)
     to_delete = Node(6)
     root.right = to_delete
-    root.insert_recursive(3)
-    root.insert_recursive(4)
-    root.insert_recursive(9)
+    root.insert_recursive(Node(3))
+    root.insert_recursive(Node(4))
+    root.insert_recursive(Node(9))
     to_delete.delete()
     root.print_in_order()
