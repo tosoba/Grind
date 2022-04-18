@@ -3,7 +3,7 @@ package leetcode;
 import java.util.ArrayList;
 
 public class IncreasingBST {
-  public static class TreeNode {
+  private static class TreeNode {
     int val;
     TreeNode left;
     TreeNode right;
