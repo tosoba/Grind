@@ -17,7 +17,7 @@ public class TwoSum {
         if (foundIndexes == null || (searchFor == nums[i] && foundIndexes.size() == 1)) continue;
         int finalI = i;
         return new int[] {
-          i, foundIndexes.stream().filter(j -> j != finalI).findFirst().orElseThrow()
+          i, foundIndexes.stream().filter(j -> j != finalI).findFirst().orElseThrow(IllegalArgumentException::new)
         };
       }
 
