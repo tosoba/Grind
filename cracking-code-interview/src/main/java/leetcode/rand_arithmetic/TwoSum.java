@@ -1,4 +1,4 @@
-package leetcode;
+package leetcode.rand_arithmetic;
 
 import java.util.ArrayList;
 import java.util.HashMap;

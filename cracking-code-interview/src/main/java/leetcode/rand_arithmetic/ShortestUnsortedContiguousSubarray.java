@@ -1,4 +1,4 @@
-package leetcode;
+package leetcode.rand_arithmetic;
 
 public class ShortestUnsortedContiguousSubarray {
     public static void main(String[] args) {

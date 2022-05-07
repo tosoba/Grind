@@ -25,6 +25,7 @@ public class LargestContiguousSum {
             if (currentSum > leftSum) leftSum = currentSum;
             ++i;
         }
+
         currentSum = 0;
         i = 1;
         while (mid + i < list.size()) {
@@ -32,6 +33,7 @@ public class LargestContiguousSum {
             if (currentSum > rightSum) rightSum = currentSum;
             ++i;
         }
+
         return leftSum + list.get(mid) + rightSum;
     }
 
