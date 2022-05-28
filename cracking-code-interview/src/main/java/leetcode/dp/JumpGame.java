@@ -18,6 +18,7 @@ public class JumpGame {
         var canReachLast = current + nums[current] >= nums.length - 1;
         if (canReachLast) {
             memo[current] = true;
+            return;
         }
 
         for (var i = current + 1; i < memo.length && i <= current + nums[current]; ++i) {
