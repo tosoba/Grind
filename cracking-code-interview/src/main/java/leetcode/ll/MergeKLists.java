@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MergeKLists {
-    public static class ListNode {
+    private static class ListNode {
         int val;
         ListNode next;
 
