@@ -1,8 +1,8 @@
-package td;
+package td.dp;
 
 // https://techiedelight.com/practice/?problem=InterleavingStringII
 
-public class IsInterleaving {
+public class StringIsInterleaving {
   public static boolean isInterleaving(String X, String Y, String S) {
     if (S.length() != X.length() + Y.length()) return false;
     return isInterleaving(X, Y, S, 0, 0, 0);
