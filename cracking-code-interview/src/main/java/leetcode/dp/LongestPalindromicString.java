@@ -1,6 +1,12 @@
 package leetcode.dp;
 
 public class LongestPalindromicString {
+  // - palindromes can have odd/even number of characters
+  // - for odd number ones iterate through string and for each letter try to grow palindrome
+  // outwards
+  // - for event number ones iterate through string and for each letter pair try to grow palindrome
+  // outwards
+
   public String longestPalindrome(String s) {
     if (s == null || s.isEmpty()) return s;
     if (s.chars().distinct().count() == s.length()) return s.substring(0, 1);
