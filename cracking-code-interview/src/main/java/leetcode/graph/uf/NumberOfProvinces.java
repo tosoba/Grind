@@ -1,4 +1,4 @@
-package leetcode.graph.bfs;
+package leetcode.graph.uf;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
