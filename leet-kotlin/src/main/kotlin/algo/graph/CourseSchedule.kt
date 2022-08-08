@@ -4,29 +4,26 @@ import java.util.*
 
 fun canFinishTopSort(numCourses: Int, prerequisites: Array<IntArray>): Boolean {
     val adj = Array(numCourses) { mutableSetOf<Int>() }
-    val degrees = Array(numCourses) { 0 }
+    val degrees = mutableMapOf<Int, Int>()
 
     prerequisites.forEach { (a, b) ->
         adj[a].add(b)
-        ++degrees[b]
+        degrees[b]?.let { degrees[b] = it + 1 } ?: run { degrees[b] = 1 }
     }
 
     val availableCourses = ArrayDeque<Int>()
-    degrees.forEachIndexed { course, degree ->
-        if (degree == 0) {
-            availableCourses.addLast(course)
-            degrees[course] = -1
-        }
+    repeat(numCourses) { course ->
+        if (!degrees.containsKey(course)) availableCourses.addLast(course)
     }
 
     var coursesLeft = numCourses
     while (availableCourses.isNotEmpty()) {
         val course = availableCourses.pollFirst()
-        degrees[course] = -1
         --coursesLeft
         adj[course].forEach { nextCourse ->
-            --degrees[nextCourse]
+            degrees[nextCourse] = degrees[nextCourse]!! - 1
             if (degrees[nextCourse] == 0) {
+                degrees.remove(nextCourse)
                 availableCourses.addLast(nextCourse)
             }
         }
