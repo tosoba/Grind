@@ -19,3 +19,9 @@ fun listToNodes(list: List<Int>): ListNode? {
     }
     return head
 }
+
+fun printList(node: ListNode?) {
+    if (node == null) return
+    println(node.`val`)
+    printList(node.next)
+}
