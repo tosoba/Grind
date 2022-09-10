@@ -26,9 +26,9 @@ fun listToRoot(vals: List<Int?>): TreeNode? {
         }
 
         if ((i - 1) % 2 == 0) {
-            nodes[(i - 1) / 2]!!.left = node
+            nodes[(i - 1) / 2]?.left = node
         } else {
-            nodes[(i - 2) / 2]!!.right = node
+            nodes[(i - 2) / 2]?.right = node
         }
 
         i++
